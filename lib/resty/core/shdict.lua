@@ -11,7 +11,6 @@ local get_string_buf = base.get_string_buf
 local get_string_buf_size = base.get_string_buf_size
 local get_size_ptr = base.get_size_ptr
 local tonumber = tonumber
-local tostring = tostring
 local next = next
 local type = type
 local error = error
@@ -179,7 +178,9 @@ local function shdict_store(zone, op, key, value, exptime, flags)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        -- technically this function is not called directly, but due to the
+        -- tail return semantics, the stack level 2 is correct here
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key
@@ -273,7 +274,7 @@ local function shdict_get(zone, key)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key
@@ -348,7 +349,7 @@ local function shdict_get_stale(zone, key)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key
@@ -422,7 +423,7 @@ local function shdict_incr(zone, key, value, init, init_ttl)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key
@@ -502,7 +503,7 @@ local function shdict_ttl(zone, key)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key
@@ -540,7 +541,7 @@ local function shdict_expire(zone, key, exptime)
     end
 
     if type(key) ~= "string" then
-        key = tostring(key)
+        error("bad key (string expected, got " .. type(key) .. ")", 2)
     end
 
     local key_len = #key

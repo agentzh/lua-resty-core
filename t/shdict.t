@@ -1636,3 +1636,63 @@ ttl: 2147483648
 [error]
 [alert]
 [crit]
+
+
+
+=== TEST 50: trying to use a non-string key is an error
+--- http_config eval: $::HttpConfig
+--- config
+    location = /t {
+        content_by_lua_block {
+            local dogs = ngx.shared.dogs
+            local ok, err
+            dogs:flush_all()
+
+            ok, err = pcall(function() dogs:set({}, '') end)
+            ngx.say('set ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:safe_set({}, '') end)
+            ngx.say('safe_set ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:get(function() end) end)
+            ngx.say('get ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:get_stale(function() end) end)
+            ngx.say('get_stale ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:add(0, '') end)
+            ngx.say('add ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:safe_add(0, '') end)
+            ngx.say('safe_add ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:replace({}, '') end)
+            ngx.say('replace ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:delete({}) end)
+            ngx.say('delete ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:incr(true, 0) end)
+            ngx.say('incr ', ok, ' ', err)
+
+            ok, err = pcall(function() dogs:ttl({}) end)
+            ngx.say('ttl ', ok, ' ', err)
+        }
+    }
+--- request
+GET /t
+--- response_body_like
+set false content_by_lua.*: bad key \(string expected, got table\)
+safe_set false content_by_lua.*: bad key \(string expected, got table\)
+get false content_by_lua.*: bad key \(string expected, got function\)
+get_stale false content_by_lua.*: bad key \(string expected, got function\)
+add false content_by_lua.*: bad key \(string expected, got number\)
+safe_add false content_by_lua.*: bad key \(string expected, got number\)
+replace false content_by_lua.*: bad key \(string expected, got table\)
+delete false content_by_lua.*: bad key \(string expected, got table\)
+incr false content_by_lua.*: bad key \(string expected, got boolean\)
+ttl false content_by_lua.*: bad key \(string expected, got table\)
+--- no_error_log
+[error]
+[alert]
+[crit]
