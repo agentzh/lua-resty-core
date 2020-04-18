@@ -867,7 +867,7 @@ failed to create OCSP request: no issuer certificate in chain
             local resp = f:read("*a")
             f:close()
 
-            local ok, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local ok, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not ok then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return
@@ -959,7 +959,7 @@ OCSP response validation ok
             local resp = f:read("*a")
             f:close()
 
-            local req, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local req, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not req then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return
@@ -1051,7 +1051,7 @@ OCSP response validation ok
             local resp = f:read("*a")
             f:close()
 
-            local req, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local req, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not req then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return
@@ -1146,7 +1146,7 @@ FIXME: we should complain in this case.
             local resp = f:read("*a")
             f:close()
 
-            local req, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local req, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not req then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return
@@ -1239,7 +1239,7 @@ OCSP response validation ok
             local resp = f:read("*a")
             f:close()
 
-            local req, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local req, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not req then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return
@@ -1331,7 +1331,7 @@ OCSP response validation ok
             local resp = f:read("*a")
             f:close()
 
-            local req, err = ocsp.validate_ocsp_response(resp, cert_data)
+            local req, _, err = ocsp.validate_ocsp_response(resp, cert_data)
             if not req then
                 ngx.log(ngx.ERR, "failed to validate OCSP response: ", err)
                 return ngx.exit(ngx.ERROR)
