@@ -35,6 +35,8 @@ local ngx_lua_ffi_set_cert
 local ngx_lua_ffi_set_priv_key
 local ngx_lua_ffi_free_cert
 local ngx_lua_ffi_free_priv_key
+local ngx_lua_ffi_ssl_export_keying_material
+local ngx_lua_ffi_ssl_export_keying_material_early
 
 
 if subsystem == 'http' then
@@ -78,6 +80,16 @@ if subsystem == 'http' then
     void ngx_http_lua_ffi_free_cert(void *cdata);
 
     void ngx_http_lua_ffi_free_priv_key(void *cdata);
+
+    int ngx_http_lua_ffi_ssl_export_keying_material(void *r,
+        unsigned char *out, size_t out_size,
+        const char *label, size_t llen,
+        const unsigned char *ctx, size_t ctxlen, int use_ctx, char **err);
+
+    int ngx_http_lua_ffi_ssl_export_keying_material_early(void *r,
+        unsigned char *out, size_t out_size,
+        const char *label, size_t llen,
+        const unsigned char *ctx, size_t ctxlen, char **err);
     ]]
 
     ngx_lua_ffi_ssl_set_der_certificate =
@@ -97,6 +109,10 @@ if subsystem == 'http' then
     ngx_lua_ffi_set_priv_key = C.ngx_http_lua_ffi_set_priv_key
     ngx_lua_ffi_free_cert = C.ngx_http_lua_ffi_free_cert
     ngx_lua_ffi_free_priv_key = C.ngx_http_lua_ffi_free_priv_key
+    ngx_lua_ffi_ssl_export_keying_material =
+        C.ngx_http_lua_ffi_ssl_export_keying_material
+    ngx_lua_ffi_ssl_export_keying_material_early =
+        C.ngx_http_lua_ffi_ssl_export_keying_material_early
 
 elseif subsystem == 'stream' then
     ffi.cdef[[
@@ -152,7 +168,8 @@ elseif subsystem == 'stream' then
     ngx_lua_ffi_ssl_raw_client_addr = C.ngx_stream_lua_ffi_ssl_raw_client_addr
     ngx_lua_ffi_cert_pem_to_der = C.ngx_stream_lua_ffi_cert_pem_to_der
     ngx_lua_ffi_priv_key_pem_to_der = C.ngx_stream_lua_ffi_priv_key_pem_to_der
-    ngx_lua_ffi_ssl_get_tls1_version = C.ngx_stream_lua_ffi_ssl_get_tls1_version
+    ngx_lua_ffi_ssl_get_tls1_version =
+        C.ngx_stream_lua_ffi_ssl_get_tls1_version
     ngx_lua_ffi_parse_pem_cert = C.ngx_stream_lua_ffi_parse_pem_cert
     ngx_lua_ffi_parse_pem_priv_key = C.ngx_stream_lua_ffi_parse_pem_priv_key
     ngx_lua_ffi_set_cert = C.ngx_stream_lua_ffi_set_cert
@@ -197,7 +214,6 @@ function _M.set_der_cert(data)
 
     return nil, ffi_str(errmsg[0])
 end
-
 
 function _M.set_der_priv_key(data)
     local r = get_request()
@@ -379,6 +395,65 @@ function _M.set_priv_key(priv_key)
     return nil, ffi_str(errmsg[0])
 end
 
+
+function _M.export_keying_material(length, label, context)
+    local r = get_request()
+    if not r then
+        error("no request found")
+    end
+
+    local outbuf = get_string_buf(length)
+    local use_context = 0
+    local ctx_len = 0
+    local ctx = nil
+    if context then
+        ctx_len = #context
+        ctx = ffi.new("unsigned char[?]", ctx_len, context)
+        use_context = 1
+    end
+
+    local rc = ngx_lua_ffi_ssl_export_keying_material(r, outbuf, length,
+        label, #label, ctx, ctx_len, use_context, errmsg)
+
+    if rc == FFI_OK then
+        return ffi_str(outbuf, length)
+    end
+
+    if rc == FFI_DECLINED then
+        return nil
+    end
+
+    return nil, ffi_str(errmsg[0])
+end
+
+
+function _M.export_keying_material_early(length, label, context)
+    local r = get_request()
+    if not r then
+        error("no request found")
+    end
+
+    local outbuf = get_string_buf(length)
+    local ctx_len = 0
+    local ctx = nil
+    if context then
+        ctx_len = #context
+        ctx = ffi.new("unsigned char[?]", ctx_len, context)
+    end
+
+    local rc = ngx_lua_ffi_ssl_export_keying_material_early(r, outbuf, length,
+        label, #label, ctx, ctx_len, errmsg)
+
+    if rc == FFI_OK then
+        return ffi_str(outbuf, length)
+    end
+
+    if rc == FFI_DECLINED then
+        return nil
+    end
+
+    return nil, ffi_str(errmsg[0])
+end
 
 do
     _M.SSL3_VERSION = 0x0300
