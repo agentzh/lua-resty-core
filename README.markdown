@@ -26,9 +26,9 @@ Table of Contents
     * [resty.core.time](#restycoretime)
     * [resty.core.worker](#restycoreworker)
     * [resty.core.phase](#restycorephase)
+    * [resty.core.socket.tcp](#restycoresockettcp)
     * [resty.core.ndk](#restycorendk)
     * [resty.core.socket](#restycoresocket)
-    * [resty.core.socket_tcp](#restycoresocket_tcp)
     * [ngx.semaphore](#ngxsemaphore)
     * [ngx.balancer](#ngxbalancer)
     * [ngx.ssl](#ngxssl)
@@ -244,7 +244,7 @@ API Implemented
 
 [Back to TOC](#table-of-contents)
 
-## resty.core.socket_tcp
+## resty.core.socket.tcp
 
 * [tcpsock:tlshandshake](https://github.com/openresty/lua-nginx-module#tcpsocktlshandshake)
 * [tcpsock:sslhandshake](https://github.com/openresty/lua-nginx-module#tcpsocksslhandshake)
