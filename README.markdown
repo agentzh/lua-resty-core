@@ -27,6 +27,7 @@ Table of Contents
     * [resty.core.time](#restycoretime)
     * [resty.core.worker](#restycoreworker)
     * [resty.core.phase](#restycorephase)
+    * [resty.core.socket.tcp](#restycoresockettcp)
     * [resty.core.ndk](#restycorendk)
     * [resty.core.socket](#restycoresocket)
     * [ngx.semaphore](#ngxsemaphore)
@@ -256,6 +257,13 @@ in the current request before you reusing the `ctx` table in some other place.
 ## resty.core.phase
 
 * [ngx.get_phase](https://github.com/openresty/lua-nginx-module#ngxget_phase)
+
+[Back to TOC](#table-of-contents)
+
+## resty.core.socket.tcp
+
+* [tcpsock:tlshandshake](https://github.com/openresty/lua-nginx-module#tcpsocktlshandshake)
+* [tcpsock:sslhandshake](https://github.com/openresty/lua-nginx-module#tcpsocksslhandshake)
 
 [Back to TOC](#table-of-contents)
 
